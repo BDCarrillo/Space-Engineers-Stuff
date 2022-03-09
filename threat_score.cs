@@ -161,20 +161,20 @@ private void countBlocksPerGrid(Dictionary<long, IMyCubeGrid> grids, Dictionary<
 private void threatScoreSingleGrid() {
     float antenna = blocksThreat<IMyRadioAntenna>(b => 4);
     float beacon = blocksThreat<IMyBeacon>(b => 3);
-    float cargo = blocksThreat<IMyCargoContainer>(b => 0.5f); //need inventory calc
+    float cargo = blocksThreat<IMyCargoContainer>(b => 1.5f); //using 1.5 to assume full inventory
     float controllers = blocksThreat<IMyShipController>(b => 0.5f);
     float gravity = blocksThreat<IMyGravityGenerator>(b => 2);
     gravity += blocksThreat<IMyVirtualMass>(b => 2);
     float weapons = blocksThreat<IMyUserControllableGun>(b => 20);
-    //TODO: add WC fixed weapons
+    //TODO: add WC fixed weapons at 20 (60 with full inventory)
     float jumpdrives = blocksThreat<IMyJumpDrive>(b => 10);
     float mechanical = blocksThreat<IMyMechanicalConnectionBlock>(b => 1);
     float medical = blocksThreat<IMyMedicalRoom>(b => 10);
     //TODO: need to account for survival kits += blocksThreat<>(b =>10);
-    float production = blocksThreat<IMyProductionBlock>(b => 3); //need inventory calc  
+    float production = blocksThreat<IMyProductionBlock>(b => 9); //Using 9 to assume full inventory  
     float thrusters = blocksThreat<IMyThrust>(b => 2);
-    float tools = blocksThreat<IMyShipToolBase>(b => 2);
-    //TODO: add WC turrets at 30 each   
+    float tools = blocksThreat<IMyShipToolBase>(b => 6); //using 6 to assume full inventory
+    //TODO: add WC turrets at 30 each (90 with full inventory)   
     float powerblocks = blocksThreat<IMyPowerProducer>(b => 0.5f);
     
     float power = blocksThreat<IMyPowerProducer>(b => (b as IMyPowerProducer).MaxOutput / 10, b => b.IsWorking);
