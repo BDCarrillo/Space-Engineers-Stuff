@@ -170,7 +170,7 @@ private void threatScoreSingleGrid() {
     float jumpdrives = blocksThreat<IMyJumpDrive>(b => 10);
     float mechanical = blocksThreat<IMyMechanicalConnectionBlock>(b => 1);
     float medical = blocksThreat<IMyMedicalRoom>(b => 10);
-    //TODO: need to account for survival kits += blocksThreat<>(b =>10);
+    medical += blocksThreat<IMyTerminalBlock>(b => b.BlockDefinition.SubtypeName.StartsWith("SurvivalKit", StringComparison.OrdinalIgnoreCase) ? 10 : 0);
     float production = blocksThreat<IMyProductionBlock>(b => 4); //Using 4 to assume full inventory, normally 2  
     float thrusters = blocksThreat<IMyThrust>(b => 2);
     float tools = blocksThreat<IMyShipToolBase>(b => 4); //using 4 to assume full inventory, normally 2
