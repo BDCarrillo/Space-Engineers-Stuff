@@ -170,7 +170,6 @@ private void threatScoreSingleGrid() {
     //mechanical at 1
     float medicalrm = blocksThreat<IMyMedicalRoom>(b => 10);
     //float skit = blocksThreat<IMy>(b=>10);
-    //medical at 10
     float production = blocksThreat<IMyProductionBlock>(b => 3); //need inventory calc  
     float thrusters = blocksThreat<IMyThrust>(b => 2);
     float tools = blocksThreat<IMyShipToolBase>(b => 2);
@@ -180,12 +179,12 @@ private void threatScoreSingleGrid() {
 
     float blocks = (float)(totalBlocks > 0 ? totalBlocks : countBlocks()) / 100;
 
-    //grid size (min max dist/4)
+    //grid size Vector3D.Distance(grid.min, grid.max)/4;
     
     //static mult 0.75f
     
     float multiplier = Me.CubeGrid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
-    float score = (power + weapons + production + tools + thrusters + cargo + antenna + beacon + blocks) * multiplier *0.70f;
+    float score = (antenna+beacon+cargo+weapons+jumpdrives+medicalrm+production+thrusters+tools) * multiplier *0.70f;
 
     Echo("Grid threat score: " + score);
     Echo(" - power: " + power);
