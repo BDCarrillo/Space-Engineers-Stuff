@@ -166,14 +166,15 @@ private void threatScoreSingleGrid() {
     float gravity = blocksThreat<IMyGravityGenerator>(b => 2);
     gravity += blocksThreat<IMyVirtualMass>(b => 2);
     float weapons = blocksThreat<IMyUserControllableGun>(b => 20);
+    //TODO: add WC fixed weapons
     float jumpdrives = blocksThreat<IMyJumpDrive>(b => 10);
     float mechanical = blocksThreat<IMyMechanicalConnectionBlock>(b => 1);
     float medical = blocksThreat<IMyMedicalRoom>(b => 10);
-    //need to account for survival kits += blocksThreat<>(b =>10);
+    //TODO: need to account for survival kits += blocksThreat<>(b =>10);
     float production = blocksThreat<IMyProductionBlock>(b => 3); //need inventory calc  
     float thrusters = blocksThreat<IMyThrust>(b => 2);
     float tools = blocksThreat<IMyShipToolBase>(b => 2);
-    //turrets at 30 each   
+    //TODO: add WC turrets at 30 each   
     float powerblocks = blocksThreat<IMyPowerProducer>(b => 0.5f);
     
     float power = blocksThreat<IMyPowerProducer>(b => (b as IMyPowerProducer).MaxOutput / 10, b => b.IsWorking);
@@ -212,7 +213,8 @@ public void threatScoreMultiGrid() {
     Dictionary<long, IMyCubeGrid> grids = new Dictionary<long, IMyCubeGrid>();
     Dictionary<long, int> blocksPerGrid = new Dictionary<long, int>();
     countBlocksPerGrid(grids, blocksPerGrid);
-
+    
+    //TODO: Update all values for MultiGrid
     var power = blocksThreatPerGrid<IMyPowerProducer>(b => (b as IMyPowerProducer).MaxOutput / 10, b => b.IsWorking);
     var weapons = blocksThreatPerGrid<IMyUserControllableGun>(b => 5);
     var production = blocksThreatPerGrid<IMyProductionBlock>(b => isMod(b) ? 3 : 1.5f);
