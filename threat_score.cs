@@ -12,7 +12,7 @@
         */
 
 // Calculate the threat score of the current grid and connected grids (true), or only the current grid (false).
-bool multiGrid = false;
+bool multiGrid = true;
 
 // If you get "error: Script execution terminated, script is too complex" it's because the grid is too large for
 // counting all the non-terminal blocks, because unfortunately the game doesn't expose them (see below).
@@ -189,8 +189,8 @@ private void CountBlocksPerGrid(Dictionary<long, IMyCubeGrid> grids, Dictionary<
 
 private void ThreatScoreSingleGrid()
 {
-    float antenna = BlocksThreat<IMyRadioAntenna>(b => 4);
-    float beacon = BlocksThreat<IMyBeacon>(b => 3);
+    float comm = BlocksThreat<IMyRadioAntenna>(b => 4);
+    comm += BlocksThreat<IMyBeacon>(b => 3);
     float cargo = BlocksThreat<IMyCargoContainer>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 0.5f) + 0.5f);
     float controllers = BlocksThreat<IMyShipController>(b => 0.5f);
     float gravity = BlocksThreat<IMyGravityGenerator>(b => 2);
@@ -257,29 +257,23 @@ private void ThreatScoreSingleGrid()
     float mechanical = BlocksThreat<IMyMechanicalConnectionBlock>(b => 1);
     float medical = BlocksThreat<IMyMedicalRoom>(b => 10);
     medical += BlocksThreat<IMyTerminalBlock>(b => b.BlockDefinition.SubtypeName.StartsWith("SurvivalKit", StringComparison.OrdinalIgnoreCase) ? 10 : 0);
-
     float production = BlocksThreat<IMyProductionBlock>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 3) + 3);
     float thrusters = BlocksThreat<IMyThrust>(b => 2);
     float tools = BlocksThreat<IMyShipToolBase>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 2) + 2);
-
     float powerblocks = BlocksThreat<IMyPowerProducer>(b => 0.5f);
-
     float power = BlocksThreat<IMyPowerProducer>(b => (b as IMyPowerProducer).MaxOutput / 10, b => b.IsWorking);
-
     float blocks = (float)(totalBlocks > 0 ? totalBlocks : CountBlocks()) / 100;
 
     var grid = Me.CubeGrid;
     float sizescore = (float)Vector3D.Distance(grid.WorldAABB.Min, grid.WorldAABB.Max) / 4;
     float multiplier = grid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
     if (grid.IsStatic) multiplier *= 0.75f;
-
-
     multiplier *= 0.70f; //Newer overall decrease multiplier in MES
-    float score = (antenna + beacon + cargo + controllers + gravity + weapons + jumpdrives + mechanical + medical + production + thrusters + tools + powerblocks + power + blocks + sizescore) * multiplier;
+
+    float score = (comm + cargo + controllers + gravity + weapons + jumpdrives + mechanical + medical + production + thrusters + tools + powerblocks + power + blocks + sizescore) * multiplier;
 
     Echo("Grid threat score: " + score);
-    Echo(" - antenna: " + antenna * multiplier);
-    Echo(" - beacon: " + beacon * multiplier);
+    Echo(" - communications: " + comm * multiplier);
     Echo(" - cargo: " + cargo * multiplier);
     Echo(" - controllers: " + controllers * multiplier);
     Echo(" - gravity: " + gravity * multiplier);
@@ -303,37 +297,81 @@ public void ThreatScoreMultiGrid()
     CountBlocksPerGrid(grids, blocksPerGrid);
 
     //TODO: Update all values for MultiGrid
-    var power = BlocksThreatPerGrid<IMyPowerProducer>(b => (b as IMyPowerProducer).MaxOutput / 10, b => b.IsWorking);
-    var weapons = BlocksThreatPerGrid<IMyUserControllableGun>(b => 5);
-    var production = BlocksThreatPerGrid<IMyProductionBlock>(b => IsMod(b) ? 3 : 1.5f);
-    var tools = BlocksThreatPerGrid<IMyShipToolBase>(b => 1);
-    var thrusters = BlocksThreatPerGrid<IMyThrust>(b => 1);
-    var cargo = BlocksThreatPerGrid<IMyCargoContainer>(b => 0.5f);
-    var antenna = BlocksThreatPerGrid<IMyRadioAntenna>(b => 4);
-    var beacon = BlocksThreatPerGrid<IMyBeacon>(b => IsMod(b) ? 6 : 3);
+    var comm = BlocksThreatPerGrid<IMyRadioAntenna>(b => 4);
+    // comm += BlocksThreatPerGrid<IMyBeacon>(b => 3);
+    var cargo = BlocksThreatPerGrid<IMyCargoContainer>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 0.5f) + 0.5f);
+    var controllers = BlocksThreatPerGrid<IMyShipController>(b => 0.5f);
+    var gravity = BlocksThreatPerGrid<IMyGravityGenerator>(b => 2);
+    //gravity += (BlocksThreatPerGrid<IMyVirtualMass>(b => 2));
+	
+	
+	var weapons = BlocksThreatPerGrid<IMyUserControllableGun>(b => 20);
+	/*
+    weapons += BlocksThreatPerGrid<IMyConveyorSorter>
+        (
+        b => wCFixed.Contains(b.BlockDefinition)
+        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
+        : 0 : 0
+        );
 
+    weapons += BlocksThreatPerGrid<IMySmallGatlingGun>
+        (
+        b => wCFixed.Contains(b.BlockDefinition)
+        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
+        : 0 : 0
+        );
 
+    weapons += BlocksThreatPerGrid<IMySmallMissileLauncher>
+        (
+        b => wCFixed.Contains(b.BlockDefinition)
+        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
+        : 0 : 0
+        );
 
+    weapons += BlocksThreatPerGrid<IMySmallMissileLauncherReload>
+        (
+        b => wCFixed.Contains(b.BlockDefinition)
+        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
+        : 0 : 0
+        );
 
+    weapons += BlocksThreatPerGrid<IMyConveyorSorter>
+        (
+        b => wCTurret.Contains(b.BlockDefinition)
+        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
+        : 0 : 0
+        );
 
+    weapons += BlocksThreatPerGrid<IMyLargeMissileTurret>
+        (
+        b => wCTurret.Contains(b.BlockDefinition)
+        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30 
+        : 0 : 0
+        );
 
+    weapons += BlocksThreatPerGrid<IMyLargeGatlingTurret>
+        (
+        b => wCTurret.Contains(b.BlockDefinition)
+        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
+        : 0 : 0
+        );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    weapons += BlocksThreatPerGrid<IMyLargeInteriorTurret>
+        (
+        b => wCTurret.Contains(b.BlockDefinition)
+        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
+        : 0 : 0
+        );
+	*/
+    var jumpdrives = BlocksThreatPerGrid<IMyJumpDrive>(b => 10);
+    var mechanical = BlocksThreatPerGrid<IMyMechanicalConnectionBlock>(b => 1);
+    var medical = BlocksThreatPerGrid<IMyMedicalRoom>(b => 10);
+    //medical += BlocksThreatPerGrid<IMyTerminalBlock>(b => b.BlockDefinition.SubtypeName.StartsWith("SurvivalKit", StringComparison.OrdinalIgnoreCase) ? 10 : 0);
+    var production = BlocksThreatPerGrid<IMyProductionBlock>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 3) + 3);
+    var thrusters = BlocksThreatPerGrid<IMyThrust>(b => 2);
+    var tools = BlocksThreatPerGrid<IMyShipToolBase>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 2) + 2);
+    var powerblocks = BlocksThreatPerGrid<IMyPowerProducer>(b => 0.5f);
+    var powergen = BlocksThreatPerGrid<IMyPowerProducer>(b => (b as IMyPowerProducer).MaxOutput / 10, b => b.IsWorking);
 
 
     float total = 0;
@@ -342,39 +380,53 @@ public void ThreatScoreMultiGrid()
     {
         var k = g.Key;
         var grid = g.Value;
-
+		float sizescore = (float)Vector3D.Distance(grid.WorldAABB.Min, grid.WorldAABB.Max) / 4;
     	float multiplier = grid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
     	if (grid.IsStatic) multiplier *= 0.75f;
     	multiplier *= 0.70f; //Newer overall decrease multiplier in MES
         
+
 	float blocks = (float)blocksPerGrid[k] / 100;
         float score = multiplier * (
-            (power.ContainsKey(k) ? power[k] : 0) +
-            (weapons.ContainsKey(k) ? weapons[k] : 0) +
-            (production.ContainsKey(k) ? production[k] : 0) +
-            (tools.ContainsKey(k) ? tools[k] : 0) +
-            (thrusters.ContainsKey(k) ? thrusters[k] : 0) +
+            (comm.ContainsKey(k) ? comm[k] : 0) +
             (cargo.ContainsKey(k) ? cargo[k] : 0) +
-            (antenna.ContainsKey(k) ? antenna[k] : 0) +
-            (beacon.ContainsKey(k) ? beacon[k] : 0) +
-            blocks);
+            (controllers.ContainsKey(k) ? controllers[k] : 0) +
+            (gravity.ContainsKey(k) ? gravity[k] : 0) +
+            (weapons.ContainsKey(k) ? weapons[k] : 0) +
+            (jumpdrives.ContainsKey(k) ? jumpdrives[k] : 0) +
+            (mechanical.ContainsKey(k) ? mechanical[k] : 0) +
+            (medical.ContainsKey(k) ? medical[k] : 0) +
+            (production.ContainsKey(k) ? production[k] : 0) +
+            (thrusters.ContainsKey(k) ? thrusters[k] : 0) +
+            (tools.ContainsKey(k) ? tools[k] : 0) +
+            (powerblocks.ContainsKey(k) ? powerblocks[k] : 0) +
+            (powergen.ContainsKey(k) ? powergen[k] : 0) +
+            blocks + sizescore);
         total += score;
 
         details.Add("Threat score for " + grid.CustomName + ": " + score);
-        if (power.ContainsKey(k)) details.Add(" - power: " + power[k]);
-        if (weapons.ContainsKey(k)) details.Add(" - weapons: " + weapons[k]);
-        if (production.ContainsKey(k)) details.Add(" - production: " + production[k]);
-        if (tools.ContainsKey(k)) details.Add(" - tools: " + tools[k]);
-        if (thrusters.ContainsKey(k)) details.Add(" - thrusters: " + thrusters[k]);
+        if (comm.ContainsKey(k)) details.Add(" - comm: " + comm[k]);
         if (cargo.ContainsKey(k)) details.Add(" - cargo: " + cargo[k]);
-        if (antenna.ContainsKey(k)) details.Add(" - antenna: " + antenna[k]);
-        if (beacon.ContainsKey(k)) details.Add(" - beacon: " + beacon[k]);
-        details.Add(" - blocks: " + blocks);
+        if (controllers.ContainsKey(k)) details.Add(" - controllers: " + controllers[k]);
+        if (gravity.ContainsKey(k)) details.Add(" - gravity: " + gravity[k]);
+        if (weapons.ContainsKey(k)) details.Add(" - weapons: " + weapons[k]);
+        if (jumpdrives.ContainsKey(k)) details.Add(" - jumpdrives: " + jumpdrives[k]);
+        if (mechanical.ContainsKey(k)) details.Add(" - mechanical: " + mechanical[k]);
+        if (medical.ContainsKey(k)) details.Add(" - medical: " + medical[k]);
+		if (production.ContainsKey(k)) details.Add(" - production: " + production[k]);
+		if (thrusters.ContainsKey(k)) details.Add(" - thrusters: " + thrusters[k]);
+		if (tools.ContainsKey(k)) details.Add(" - tools: " + tools[k]);
+		if (powerblocks.ContainsKey(k)) details.Add(" - powerblocks: " + powerblocks[k]);
+		if (powergen.ContainsKey(k)) details.Add(" - powergen: " + powergen[k]);											
+        details.Add(" - blocks: " + blocks);        
+		details.Add(" - size: " + sizescore);
+
 
     }
 
     Echo("Threat score: " + total);
     Echo(string.Join("\n", details));
+	
 }
 
 
