@@ -3,10 +3,7 @@ Threat Score script calculates the Modular Encounters Spawner threat level score
 To preserve server performance it runs only once, if you change any blocks or grid connections, manually run again.
 The score and details per block type (power, weapons, etc) are shown in the programmable block control panel.
 
-Workshop link: https://steamcommunity.com/sharedfiles/filedetails/?id=2498906212
-
-The Threat Score calculation is explained at https://gist.github.com/MeridiusIX/52fbf5679e67107a8cf37706205b5812
-Or in source at https://github.com/MeridiusIX/ModularEncountersSpawner/blob/36b5ef10fb39f4149532ca3a23840c3129605fdd/Data/Scripts/ModularEncountersSpawner/Spawners/SpawnResources.cs#L636
+Original Workshop link: https://steamcommunity.com/sharedfiles/filedetails/?id=2498906212
 
 It is an approximation because ingame scripts cannot get the ModId of a block, so they cannot reliably double the threat score of modded blocks.
 The script is only aware of a few modded blocks from Draconis Impossible Extended (https://wiki.sigmadraconis.games/doku.php?id=di:draconis_impossible).
@@ -14,6 +11,8 @@ The script is only aware of a few modded blocks from Draconis Impossible Extende
 Finally, remember the total threat score is calculated for all grids in a given sphere radius (other players, unknown signals, etc).
 
 Modular Encounters Spawner mod: https://steamcommunity.com/workshop/filedetails/?id=1521905890
+
+Original work by StalkR, modified by BDCarrillo as permitted by original license: https://github.com/StalkR/Space-Engineers-Stuff/blob/master/LICENSE
 */
 
 // Calculate the threat score of the current grid and connected grids (true), or only the current grid (false).
@@ -163,40 +162,50 @@ private void threatScoreSingleGrid() {
     float antenna = blocksThreat<IMyRadioAntenna>(b => 4);
     float beacon = blocksThreat<IMyBeacon>(b => 3);
     float cargo = blocksThreat<IMyCargoContainer>(b => 0.5f); //need inventory calc
-    //controllers at 0.5f
-    //gravity at 2
+    float controllers = blocksThreat<IMyShipController>(b => 0.5f);
+    float gravity = blocksThreat<IMyGravityGenerator>(b => 2);
+    gravity += blocksThreat<IMyVirtualMass>(b => 2);
     float weapons = blocksThreat<IMyUserControllableGun>(b => 20);
     float jumpdrives = blocksThreat<IMyJumpDrive>(b => 10);
-    //mechanical at 1
-    float medicalrm = blocksThreat<IMyMedicalRoom>(b => 10);
-    //float skit = blocksThreat<IMy>(b=>10);
+    float mechanical = blocksThreat<IMyMechanicalConnectionBlock>(b => 1);
+    float medical = blocksThreat<IMyMedicalRoom>(b => 10);
+    //need to account for survival kits += blocksThreat<>(b =>10);
     float production = blocksThreat<IMyProductionBlock>(b => 3); //need inventory calc  
     float thrusters = blocksThreat<IMyThrust>(b => 2);
     float tools = blocksThreat<IMyShipToolBase>(b => 2);
     //turrets at 30 each   
+    float powerblocks = blocksThreat<IMyPowerProducer>(b => 0.5f);
     
     float power = blocksThreat<IMyPowerProducer>(b => (b as IMyPowerProducer).MaxOutput / 10, b => b.IsWorking);
 
     float blocks = (float)(totalBlocks > 0 ? totalBlocks : countBlocks()) / 100;
 
-    //grid size Vector3D.Distance(grid.min, grid.max)/4;
+    var grid=Me.CubeGrid;
+    float sizescore = (float)Vector3D.Distance(grid.WorldAABB.Min, grid.WorldAABB.Max)/4;
+    float multiplier = grid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
+    if(grid.IsStatic) multiplier *=0.75f;
     
-    //static mult 0.75f
     
-    float multiplier = Me.CubeGrid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
-    float score = (antenna+beacon+cargo+weapons+jumpdrives+medicalrm+production+thrusters+tools) * multiplier *0.70f;
+    multiplier *= 0.70f; //Newer overall decrease multiplier in MES
+    float score = (antenna+beacon+cargo+controllers+gravity+weapons+jumpdrives+mechanical+medical+production+thrusters+tools+powerblocks+power+blocks+sizescore) * multiplier;
 
     Echo("Grid threat score: " + score);
-    Echo(" - power: " + power);
-    Echo(" - weapons: " + weapons);
-    Echo(" - production: " + production);
-    Echo(" - tools: " + tools);
-    Echo(" - thrusters: " + thrusters);
-    Echo(" - cargo: " + cargo);
-    Echo(" - antenna: " + antenna);
-    Echo(" - beacon: " + beacon);
-    Echo(" - blocks: " + blocks);
-    Echo(" - " + (multiplier == 2.5f ? "large" : "small" ) + " grid multiplier: " + multiplier);
+    Echo(" - antenna: " + antenna* multiplier);
+    Echo(" - beacon: " + beacon* multiplier);
+    Echo(" - cargo: " + cargo* multiplier);
+    Echo(" - controllers: " + controllers* multiplier);
+    Echo(" - gravity: " + gravity* multiplier);
+    Echo(" - fixed weapons: " + weapons* multiplier);    
+    Echo(" - jumpdrives: " + jumpdrives* multiplier);
+    Echo(" - mechanical: " + mechanical* multiplier);
+    Echo(" - medical: " + medical* multiplier);
+    Echo(" - production: " + production* multiplier);    
+    Echo(" - thrusters: " + thrusters* multiplier);
+    Echo(" - tools: " + tools* multiplier);
+    Echo(" - powerblocks: " + powerblocks* multiplier);
+    Echo(" - powergen: " + power* multiplier);
+    Echo(" - blocks: " + blocks* multiplier);
+    Echo(" - size: " + sizescore* multiplier);
 }
 
 public void threatScoreMultiGrid() {
