@@ -160,17 +160,32 @@ private void countBlocksPerGrid(Dictionary<long, IMyCubeGrid> grids, Dictionary<
 }
 
 private void threatScoreSingleGrid() {
-    float power = blocksThreat<IMyPowerProducer>(b => (b as IMyPowerProducer).MaxOutput / 10, b => b.IsWorking);
-    float weapons = blocksThreat<IMyUserControllableGun>(b => 5);
-    float production = blocksThreat<IMyProductionBlock>(b => isMod(b) ? 3 : 1.5f);
-    float tools = blocksThreat<IMyShipToolBase>(b => 1);
-    float thrusters = blocksThreat<IMyThrust>(b => 1);
-    float cargo = blocksThreat<IMyCargoContainer>(b => 0.5f);
     float antenna = blocksThreat<IMyRadioAntenna>(b => 4);
-    float beacon = blocksThreat<IMyBeacon>(b => isMod(b) ? 6 : 3);
+    float beacon = blocksThreat<IMyBeacon>(b => 3);
+    float cargo = blocksThreat<IMyCargoContainer>(b => 0.5f); //need inventory calc
+    //controllers at 0.5f
+    //gravity at 2
+    float weapons = blocksThreat<IMyUserControllableGun>(b => 20);
+    float jumpdrives = blocksThreat<IMyJumpDrive>(b => 10);
+    //mechanical at 1
+    float medicalrm = blocksThreat<IMyMedicalRoom>(b => 10);
+    //float skit = blocksThreat<IMy>(b=>10);
+    //medical at 10
+    float production = blocksThreat<IMyProductionBlock>(b => 3); //need inventory calc  
+    float thrusters = blocksThreat<IMyThrust>(b => 2);
+    float tools = blocksThreat<IMyShipToolBase>(b => 2);
+    //turrets at 30 each   
+    
+    float power = blocksThreat<IMyPowerProducer>(b => (b as IMyPowerProducer).MaxOutput / 10, b => b.IsWorking);
+
     float blocks = (float)(totalBlocks > 0 ? totalBlocks : countBlocks()) / 100;
+
+    //grid size (min max dist/4)
+    
+    //static mult 0.75f
+    
     float multiplier = Me.CubeGrid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
-    float score = (power + weapons + production + tools + thrusters + cargo + antenna + beacon + blocks) * multiplier;
+    float score = (power + weapons + production + tools + thrusters + cargo + antenna + beacon + blocks) * multiplier *0.70f;
 
     Echo("Grid threat score: " + score);
     Echo(" - power: " + power);
