@@ -312,6 +312,30 @@ public void ThreatScoreMultiGrid()
     var antenna = BlocksThreatPerGrid<IMyRadioAntenna>(b => 4);
     var beacon = BlocksThreatPerGrid<IMyBeacon>(b => IsMod(b) ? 6 : 3);
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     float total = 0;
     var details = new List<string>();
     foreach (var g in grids)
@@ -319,8 +343,11 @@ public void ThreatScoreMultiGrid()
         var k = g.Key;
         var grid = g.Value;
 
-        float multiplier = grid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
-        float blocks = (float)blocksPerGrid[k] / 100;
+    	float multiplier = grid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
+    	if (grid.IsStatic) multiplier *= 0.75f;
+    	multiplier *= 0.70f; //Newer overall decrease multiplier in MES
+        
+	float blocks = (float)blocksPerGrid[k] / 100;
         float score = multiplier * (
             (power.ContainsKey(k) ? power[k] : 0) +
             (weapons.ContainsKey(k) ? weapons[k] : 0) +
@@ -343,7 +370,7 @@ public void ThreatScoreMultiGrid()
         if (antenna.ContainsKey(k)) details.Add(" - antenna: " + antenna[k]);
         if (beacon.ContainsKey(k)) details.Add(" - beacon: " + beacon[k]);
         details.Add(" - blocks: " + blocks);
-        details.Add(" - " + (multiplier == 2.5f ? "large" : "small") + " grid multiplier: " + multiplier);
+
     }
 
     Echo("Threat score: " + total);
