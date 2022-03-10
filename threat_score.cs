@@ -195,64 +195,52 @@ private void ThreatScoreSingleGrid()
     float controllers = BlocksThreat<IMyShipController>(b => 0.5f);
     float gravity = BlocksThreat<IMyGravityGenerator>(b => 2);
     gravity += BlocksThreat<IMyVirtualMass>(b => 2);
-    float weapons = BlocksThreat<IMyUserControllableGun>(b => 20);
+    //float weapons = BlocksThreat<IMyUserControllableGun>(b => 20);
 
-    weapons += BlocksThreat<IMyConveyorSorter>
+    float weapons = BlocksThreat<IMyConveyorSorter>
         (
         b => wCFixed.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
+        ? b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
         : 0 : 0
         );
 
     weapons += BlocksThreat<IMySmallGatlingGun>
         (
-        b => wCFixed.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
-        : 0 : 0
+        b => b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20 : 0
         );
 
     weapons += BlocksThreat<IMySmallMissileLauncher>
         (
-        b => wCFixed.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
-        : 0 : 0
+        b => b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20 : 0
         );
 
     weapons += BlocksThreat<IMySmallMissileLauncherReload>
         (
-        b => wCFixed.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
-        : 0 : 0
+        b => b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20 : 0
         );
 
     weapons += BlocksThreat<IMyConveyorSorter>
         (
         b => wCTurret.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
+        ? b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
         : 0 : 0
         );
 
     weapons += BlocksThreat<IMyLargeMissileTurret>
         (
-        b => wCTurret.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30 
-        : 0 : 0
+        b => b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30 : 0
         );
 
     weapons += BlocksThreat<IMyLargeGatlingTurret>
         (
-        b => wCTurret.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
-        : 0 : 0
+        b => b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30 : 0
         );
 
     weapons += BlocksThreat<IMyLargeInteriorTurret>
         (
-        b => wCTurret.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
-        : 0 : 0
+        b => b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30 : 0
         );
- 
+
     float jumpdrives = BlocksThreat<IMyJumpDrive>(b => 10);
     float mechanical = BlocksThreat<IMyMechanicalConnectionBlock>(b => 1);
     float medical = BlocksThreat<IMyMedicalRoom>(b => 10);
@@ -273,19 +261,19 @@ private void ThreatScoreSingleGrid()
     float score = (comm + cargo + controllers + gravity + weapons + jumpdrives + mechanical + medical + production + thrusters + tools + powerblocks + power + blocks + sizescore) * multiplier;
 
     Echo("Grid threat score: " + score);
-    if(comm > 0)Echo(" - communications: " + comm * multiplier);
-    if(cargo > 0)Echo(" - cargo: " + cargo * multiplier);
-    if(controllers > 0) Echo(" - controllers: " + controllers * multiplier);
-    if(gravity > 0) Echo(" - gravity: " + gravity * multiplier);
-    if(weapons > 0) Echo(" - weapons: " + weapons * multiplier);
-    if(jumpdrives > 0) Echo(" - jumpdrives: " + jumpdrives * multiplier);
-    if(mechanical > 0) Echo(" - mechanical: " + mechanical * multiplier);
-    if(medical > 0) Echo(" - medical: " + medical * multiplier);
-    if(production > 0) Echo(" - production: " + production * multiplier);
-    if(thrusters > 0) Echo(" - thrusters: " + thrusters * multiplier);
-    if(tools > 0) Echo(" - tools: " + tools * multiplier);
-    if(powerblocks > 0) Echo(" - powerblocks: " + powerblocks * multiplier);
-    if(power > 0) Echo(" - powergen: " + power * multiplier);
+    if (comm > 0) Echo(" - communications: " + comm * multiplier);
+    if (cargo > 0) Echo(" - cargo: " + cargo * multiplier);
+    if (controllers > 0) Echo(" - controllers: " + controllers * multiplier);
+    if (gravity > 0) Echo(" - gravity: " + gravity * multiplier);
+    if (weapons > 0) Echo(" - weapons: " + weapons * multiplier);
+    if (jumpdrives > 0) Echo(" - jumpdrives: " + jumpdrives * multiplier);
+    if (mechanical > 0) Echo(" - mechanical: " + mechanical * multiplier);
+    if (medical > 0) Echo(" - medical: " + medical * multiplier);
+    if (production > 0) Echo(" - production: " + production * multiplier);
+    if (thrusters > 0) Echo(" - thrusters: " + thrusters * multiplier);
+    if (tools > 0) Echo(" - tools: " + tools * multiplier);
+    if (powerblocks > 0) Echo(" - powerblocks: " + powerblocks * multiplier);
+    if (power > 0) Echo(" - powergen: " + power * multiplier);
     Echo(" - blocks: " + blocks * multiplier);
     Echo(" - size: " + sizescore * multiplier);
 }
@@ -296,83 +284,62 @@ public void ThreatScoreMultiGrid()
     Dictionary<long, int> blocksPerGrid = new Dictionary<long, int>();
     CountBlocksPerGrid(grids, blocksPerGrid);
 
-    var comm = BlocksThreatPerGrid<IMyRadioAntenna>(b => 4);
-    string keylist = "";
-    foreach(long key in comm.Keys)
+    var comm = BlocksThreatPerGrid<IMyTerminalBlock>(b => 
+
     {
-        keylist += key;
-
-    }
-    Echo("Comm: " + keylist);
-
-    //comm.Add(BlocksThreatPerGrid<IMyBeacon>(b => 3));    //Trekker haaaalp!  Tried comm.Add to add it to the dict, but I'm bumping against limited knowledge on the struct of this
+        if (b is IMyBeacon || b is IMyRadioAntenna)
+        return 2;
+        return 0;
+    });
     var cargo = BlocksThreatPerGrid<IMyCargoContainer>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 0.5f) + 0.5f);
     var controllers = BlocksThreatPerGrid<IMyShipController>(b => 0.5f);
-    var gravity = BlocksThreatPerGrid<IMyGravityGenerator>(b => 2);
+    // A bit of an experiment. -Trekker
+    var gravity = BlocksThreatPerGrid<IMyTerminalBlock>(b =>
+    {
+        if (b is IMyGravityGenerator || b is IMyVirtualMass)
+        return 2;
+        return 0;
+    });
     //gravity += (BlocksThreatPerGrid<IMyVirtualMass>(b => 2));
-	
-	
-	var weapons = BlocksThreatPerGrid<IMyUserControllableGun>(b => 20);
-	/*
-    weapons += BlocksThreatPerGrid<IMyConveyorSorter>
-        (
-        b => wCFixed.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
-        : 0 : 0
-        );
 
-    weapons += BlocksThreatPerGrid<IMySmallGatlingGun>
-        (
-        b => wCFixed.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
-        : 0 : 0
-        );
+    // Trying the same approach, probably a lot more efficent this way too. - Trekker
+    var weapons = BlocksThreatPerGrid<IMyTerminalBlock>(b =>
+    {
+        //if (b is IMyUserControllableGun)// Note, all of the vanilla types inherrit IMyUserControllableGun.
+        //return 20;
+        if (b is IMyConveyorSorter)
+        {
+            if (wCFixed.Contains(b.BlockDefinition))
+            {
+                return b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20 : 0;
+            }
+            if (wCTurret.Contains(b.BlockDefinition))
+            {
+                return b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30 : 0;
+            }
+            return 0;
+        }
+        if (b is IMyLargeTurretBase)// IMyLargeMissileTurret, IMyLargeGatlingTurret, and IMyLargeInteriorTurret all inherit from this.
+        {
+            return b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30 : 0;
+        }
+        if (b is IMyUserControllableGun)// Remaining types are fixed weapons of IMySmallGatlingGun, IMySmallMissileLauncher, and IMySmallMissileLauncherReload type.
+        {
+            return b.GetInventory().MaxVolume > 0 ? ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20 : 0;
+        }
 
-    weapons += BlocksThreatPerGrid<IMySmallMissileLauncher>
-        (
-        b => wCFixed.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
-        : 0 : 0
-        );
+        return 0;
+    });
 
-    weapons += BlocksThreatPerGrid<IMySmallMissileLauncherReload>
-        (
-        b => wCFixed.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 20) + 20
-        : 0 : 0
-        );
-
-    weapons += BlocksThreatPerGrid<IMyConveyorSorter>
-        (
-        b => wCTurret.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
-        : 0 : 0
-        );
-
-    weapons += BlocksThreatPerGrid<IMyLargeMissileTurret>
-        (
-        b => wCTurret.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30 
-        : 0 : 0
-        );
-
-    weapons += BlocksThreatPerGrid<IMyLargeGatlingTurret>
-        (
-        b => wCTurret.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
-        : 0 : 0
-        );
-
-    weapons += BlocksThreatPerGrid<IMyLargeInteriorTurret>
-        (
-        b => wCTurret.Contains(b.BlockDefinition)
-        ? b.GetInventory().MaxVolume>0?((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 30) + 30
-        : 0 : 0
-        );
-	*/
     var jumpdrives = BlocksThreatPerGrid<IMyJumpDrive>(b => 10);
     var mechanical = BlocksThreatPerGrid<IMyMechanicalConnectionBlock>(b => 1);
-    var medical = BlocksThreatPerGrid<IMyMedicalRoom>(b => 10);
+    // Using the trick here as well. -Trekker
+    var medical = BlocksThreatPerGrid<IMyMedicalRoom>(b =>
+    {
+        if (b is IMyMedicalRoom || b.BlockDefinition.SubtypeName.StartsWith("SurvivalKit", StringComparison.OrdinalIgnoreCase))
+        return 10;
+        return 0;
+    });
     //medical += BlocksThreatPerGrid<IMyTerminalBlock>(b => b.BlockDefinition.SubtypeName.StartsWith("SurvivalKit", StringComparison.OrdinalIgnoreCase) ? 10 : 0);
     var production = BlocksThreatPerGrid<IMyProductionBlock>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 3) + 3);
     var thrusters = BlocksThreatPerGrid<IMyThrust>(b => 2);
@@ -387,13 +354,13 @@ public void ThreatScoreMultiGrid()
     {
         var k = g.Key;
         var grid = g.Value;
-		float sizescore = (float)Vector3D.Distance(grid.WorldAABB.Min, grid.WorldAABB.Max) / 4;
-    	float multiplier = grid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
-    	if (grid.IsStatic) multiplier *= 0.75f;
-    	multiplier *= 0.70f; //Newer overall decrease multiplier in MES
-        
+        float sizescore = (float)Vector3D.Distance(grid.WorldAABB.Min, grid.WorldAABB.Max) / 4;
+        float multiplier = grid.GridSizeEnum == MyCubeSize.Large ? 2.5f : 0.5f;
+        if (grid.IsStatic) multiplier *= 0.75f;
+        multiplier *= 0.70f; //Newer overall decrease multiplier in MES
 
-	float blocks = (float)blocksPerGrid[k] / 100;
+
+        float blocks = (float)blocksPerGrid[k] / 100;
         float score = multiplier * (
             (comm.ContainsKey(k) ? comm[k] : 0) +
             (cargo.ContainsKey(k) ? cargo[k] : 0) +
@@ -411,29 +378,29 @@ public void ThreatScoreMultiGrid()
             blocks + sizescore);
         total += score;
 
-        details.Add("Threat score for " + grid.CustomName + ": " + score);
-        if (comm.ContainsKey(k)) details.Add(" - comm: " + comm[k]);
-        if (cargo.ContainsKey(k)) details.Add(" - cargo: " + cargo[k]);
-        if (controllers.ContainsKey(k)) details.Add(" - controllers: " + controllers[k]);
-        if (gravity.ContainsKey(k)) details.Add(" - gravity: " + gravity[k]);
-        if (weapons.ContainsKey(k)) details.Add(" - weapons: " + weapons[k]);
-        if (jumpdrives.ContainsKey(k)) details.Add(" - jumpdrives: " + jumpdrives[k]);
-        if (mechanical.ContainsKey(k)) details.Add(" - mechanical: " + mechanical[k]);
-        if (medical.ContainsKey(k)) details.Add(" - medical: " + medical[k]);
-		if (production.ContainsKey(k)) details.Add(" - production: " + production[k]);
-		if (thrusters.ContainsKey(k)) details.Add(" - thrusters: " + thrusters[k]);
-		if (tools.ContainsKey(k)) details.Add(" - tools: " + tools[k]);
-		if (powerblocks.ContainsKey(k)) details.Add(" - powerblocks: " + powerblocks[k]);
-		if (powergen.ContainsKey(k)) details.Add(" - powergen: " + powergen[k]);											
-        details.Add(" - blocks: " + blocks);        
-		details.Add(" - size: " + sizescore);
+        details.Add(grid.CustomName + " score: " + score);
+        if (comm.ContainsKey(k))if (comm[k]>0) details.Add(" - comm: " + comm[k]*multiplier);
+        if (cargo.ContainsKey(k)) details.Add(" - cargo: " + cargo[k]*multiplier);
+        if (controllers.ContainsKey(k)) details.Add(" - controllers: " + controllers[k]*multiplier);
+        if (gravity.ContainsKey(k))if (gravity[k]>0) details.Add(" - gravity: " + gravity[k]*multiplier);
+        if (weapons.ContainsKey(k))if (weapons[k]>0) details.Add(" - weapons: " + weapons[k]*multiplier);
+        if (jumpdrives.ContainsKey(k)) details.Add(" - jumpdrives: " + jumpdrives[k]*multiplier);
+        if (mechanical.ContainsKey(k)) details.Add(" - mechanical: " + mechanical[k]*multiplier);
+        if (medical.ContainsKey(k))if (medical[k]>0) details.Add(" - medical: " + medical[k]*multiplier);
+        if (production.ContainsKey(k)) details.Add(" - production: " + production[k]*multiplier);
+        if (thrusters.ContainsKey(k)) details.Add(" - thrusters: " + thrusters[k]*multiplier);
+        if (tools.ContainsKey(k)) details.Add(" - tools: " + tools[k]*multiplier);
+        if (powerblocks.ContainsKey(k)) details.Add(" - powerblocks: " + powerblocks[k]*multiplier);
+        if (powergen.ContainsKey(k)) details.Add(" - powergen: " + powergen[k]*multiplier);
+        details.Add(" - blocks: " + blocks*multiplier);
+        details.Add(" - size: " + sizescore*multiplier);
 
 
     }
 
-    Echo("Threat score: " + total);
+    Echo("Total score: " + total);
     Echo(string.Join("\n", details));
-	
+
 }
 
 
