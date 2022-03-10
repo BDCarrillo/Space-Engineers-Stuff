@@ -287,9 +287,11 @@ public void ThreatScoreMultiGrid()
     var comm = BlocksThreatPerGrid<IMyTerminalBlock>(b => 
 
     {
-        if (b is IMyBeacon || b is IMyRadioAntenna)
-        return 2;
-        return 0;
+        if (b is IMyRadioAntenna)
+        return 4;
+        if (b is IMyBeacon)
+		return 3;
+		return 0;
     });
     var cargo = BlocksThreatPerGrid<IMyCargoContainer>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 0.5f) + 0.5f);
     var controllers = BlocksThreatPerGrid<IMyShipController>(b => 0.5f);
@@ -392,12 +394,11 @@ public void ThreatScoreMultiGrid()
         if (tools.ContainsKey(k)) details.Add(" - tools: " + tools[k]*multiplier);
         if (powerblocks.ContainsKey(k)) details.Add(" - powerblocks: " + powerblocks[k]*multiplier);
         if (powergen.ContainsKey(k)) details.Add(" - powergen: " + powergen[k]*multiplier);
-        details.Add(" - blocks: " + blocks*multiplier);
+        details.Add(blocksPerGrid[k]+" - blocks: " + blocks*multiplier);
         details.Add(" - size: " + sizescore*multiplier);
 
 
     }
-
     Echo("Total score: " + total);
     Echo(string.Join("\n", details));
 
