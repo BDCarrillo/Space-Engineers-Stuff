@@ -273,19 +273,19 @@ private void ThreatScoreSingleGrid()
     float score = (comm + cargo + controllers + gravity + weapons + jumpdrives + mechanical + medical + production + thrusters + tools + powerblocks + power + blocks + sizescore) * multiplier;
 
     Echo("Grid threat score: " + score);
-    Echo(" - communications: " + comm * multiplier);
-    Echo(" - cargo: " + cargo * multiplier);
-    Echo(" - controllers: " + controllers * multiplier);
-    Echo(" - gravity: " + gravity * multiplier);
-    Echo(" - weapons: " + weapons * multiplier);
-    Echo(" - jumpdrives: " + jumpdrives * multiplier);
-    Echo(" - mechanical: " + mechanical * multiplier);
-    Echo(" - medical: " + medical * multiplier);
-    Echo(" - production: " + production * multiplier);
-    Echo(" - thrusters: " + thrusters * multiplier);
-    Echo(" - tools: " + tools * multiplier);
-    Echo(" - powerblocks: " + powerblocks * multiplier);
-    Echo(" - powergen: " + power * multiplier);
+    if(comm > 0)Echo(" - communications: " + comm * multiplier);
+    if(cargo > 0)Echo(" - cargo: " + cargo * multiplier);
+    if(controllers > 0) Echo(" - controllers: " + controllers * multiplier);
+    if(gravity > 0) Echo(" - gravity: " + gravity * multiplier);
+    if(weapons > 0) Echo(" - weapons: " + weapons * multiplier);
+    if(jumpdrives > 0) Echo(" - jumpdrives: " + jumpdrives * multiplier);
+    if(mechanical > 0) Echo(" - mechanical: " + mechanical * multiplier);
+    if(medical > 0) Echo(" - medical: " + medical * multiplier);
+    if(production > 0) Echo(" - production: " + production * multiplier);
+    if(thrusters > 0) Echo(" - thrusters: " + thrusters * multiplier);
+    if(tools > 0) Echo(" - tools: " + tools * multiplier);
+    if(powerblocks > 0) Echo(" - powerblocks: " + powerblocks * multiplier);
+    if(power > 0) Echo(" - powergen: " + power * multiplier);
     Echo(" - blocks: " + blocks * multiplier);
     Echo(" - size: " + sizescore * multiplier);
 }
@@ -296,9 +296,16 @@ public void ThreatScoreMultiGrid()
     Dictionary<long, int> blocksPerGrid = new Dictionary<long, int>();
     CountBlocksPerGrid(grids, blocksPerGrid);
 
-    //TODO: Update all values for MultiGrid
     var comm = BlocksThreatPerGrid<IMyRadioAntenna>(b => 4);
-    // comm += BlocksThreatPerGrid<IMyBeacon>(b => 3);
+    string keylist = "";
+    foreach(long key in comm.Keys)
+    {
+        keylist += key;
+
+    }
+    Echo("Comm: " + keylist);
+
+    //comm.Add(BlocksThreatPerGrid<IMyBeacon>(b => 3));    //Trekker haaaalp!  Tried comm.Add to add it to the dict, but I'm bumping against limited knowledge on the struct of this
     var cargo = BlocksThreatPerGrid<IMyCargoContainer>(b => ((float)b.GetInventory().CurrentVolume / (float)b.GetInventory().MaxVolume * 0.5f) + 0.5f);
     var controllers = BlocksThreatPerGrid<IMyShipController>(b => 0.5f);
     var gravity = BlocksThreatPerGrid<IMyGravityGenerator>(b => 2);
