@@ -394,7 +394,7 @@ public void ThreatScoreMultiGrid()
         if (tools.ContainsKey(k)) details.Add(" - tools: " + tools[k]*multiplier);
         if (powerblocks.ContainsKey(k)) details.Add(" - powerblocks: " + powerblocks[k]*multiplier);
         if (powergen.ContainsKey(k)) details.Add(" - powergen: " + powergen[k]*multiplier);
-        details.Add(blocksPerGrid[k]+" - blocks: " + blocks*multiplier);
+        details.Add(" - blocks: " + blocks*multiplier);
         details.Add(" - size: " + sizescore*multiplier);
 
 
